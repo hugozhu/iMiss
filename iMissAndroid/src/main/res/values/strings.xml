@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="AppName">iMiss</string>
+    <string name="email">邮件地址</string>
+    <string name="setting_email_notification">邮件提醒</string>
+</resources>
