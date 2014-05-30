@@ -2,6 +2,8 @@
 
 <resources>
     <string name="AppName">iMiss</string>
-    <string name="email">邮件地址</string>
-    <string name="setting_email_notification">邮件提醒</string>
+    <string name="your_phone_number">Your Phone Number</string>
+    <string name="your_email">Your Email</string>
+    <string name="setting_email_notification">Alert by Email</string>
+    <string name="setting_sms_notification">Alert by Email</string>
 </resources>
