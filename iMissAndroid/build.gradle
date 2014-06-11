@@ -44,9 +44,12 @@ android {
         debug {
             storeFile file("debug.keystore")
         }
-
+        
         release {
             storeFile file("release.keystore")
+            storePassword "helloimiss"
+            keyAlias "imiss"
+            keyPassword "helloimiss"
         }
     }
 

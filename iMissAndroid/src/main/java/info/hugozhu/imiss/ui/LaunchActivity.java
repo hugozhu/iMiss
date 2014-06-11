@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ViewGroup;
 import info.hugozhu.imiss.R;
+import info.hugozhu.imiss.SMSBroadcastReceiver;
 import info.hugozhu.imiss.ui.Views.BaseFragment;
 
 /**
@@ -27,22 +28,20 @@ public class LaunchActivity extends ActionBarActivity {
     private ContentObserver newMmsContentObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange) {
             int mNewSmsCount = getNewSmsCount() + getNewMmsCount();
-            Log.e(TAG,"missing msg:"+mNewSmsCount);
+            Log.e(TAG,"missing msg:"+ mNewSmsCount+" missing calls:"+readMissCall());
         }
     };
+
     private void registerObserver() {
         unregisterObserver();
-        getContentResolver().registerContentObserver(Uri.parse("content://sms"), true,
-                newMmsContentObserver);
+//        getContentResolver().registerContentObserver(Uri.parse("content://sms"), true,
+//                newMmsContentObserver);
         getContentResolver().registerContentObserver(Telephony.MmsSms.CONTENT_URI, true,
                 newMmsContentObserver);
     }
 
     private synchronized void unregisterObserver() {
         try {
-            if (newMmsContentObserver != null) {
-                getContentResolver().unregisterContentObserver(newMmsContentObserver);
-            }
             if (newMmsContentObserver != null) {
                 getContentResolver().unregisterContentObserver(newMmsContentObserver);
             }
@@ -100,6 +99,8 @@ public class LaunchActivity extends ActionBarActivity {
         }
     };
 
+    SMSBroadcastReceiver smsReceiver = new SMSBroadcastReceiver();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,10 +128,15 @@ public class LaunchActivity extends ActionBarActivity {
 
         setContentView(R.layout.application_layout);
 
-        Log.e(TAG, "hello----showing settings");
         SettingsActivity fragment = new SettingsActivity();
         fragment.onFragmentCreate();
         presentFragment(fragment,"settings",false);
+
+        Log.e(TAG,"------register sms listener------");
+        IntentFilter smsFilter = new IntentFilter();
+        smsFilter.addAction(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
+        smsFilter.setPriority(Integer.MAX_VALUE);
+        registerReceiver(smsReceiver, smsFilter);
     }
 
     @Override
@@ -138,6 +144,7 @@ public class LaunchActivity extends ActionBarActivity {
         super.onDestroy();
         unregisterReceiver(receiver);
         unregisterObserver();
+        unregisterReceiver(smsReceiver);
     }
 
 

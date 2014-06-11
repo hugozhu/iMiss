@@ -29,6 +29,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="org.telegram.messenger.permission.MAPS_RECEIVE"/>
@@ -116,6 +120,12 @@
                 <data android:mimeType="vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile"/>
             </intent-filter>
         </activity>
+
+        <!--<receiver android:name=".SMSBroadcastReceiver">-->
+            <!--<intent-filter android:priority="800">-->
+                <!--<action android:name="android.provider.Telephony.SMS_RECEIVED"></action>-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
     </application>
 
