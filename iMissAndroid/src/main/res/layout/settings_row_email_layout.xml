@@ -1,0 +1,25 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top">
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/settings_email"
+        android:text="@string/your_email"
+        android:textColor="#333333"
+        android:layout_gravity="left|center_vertical"/>
+
+    <View
+        android:background="@color/divider"
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:layout_gravity="bottom"
+        android:id="@+id/settings_row_divider"/>
+
+</FrameLayout>

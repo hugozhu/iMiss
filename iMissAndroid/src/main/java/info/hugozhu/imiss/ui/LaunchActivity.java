@@ -84,6 +84,7 @@ public class LaunchActivity extends ActionBarActivity {
             result = cursor.getCount();
             cursor.close();
         }
+
         return result;
     }
 
