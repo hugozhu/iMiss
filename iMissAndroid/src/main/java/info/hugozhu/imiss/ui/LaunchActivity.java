@@ -16,7 +16,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ViewGroup;
 import info.hugozhu.imiss.R;
-import info.hugozhu.imiss.SMSBroadcastReceiver;
 import info.hugozhu.imiss.ui.Views.BaseFragment;
 
 /**
@@ -34,8 +33,6 @@ public class LaunchActivity extends ActionBarActivity {
 
     private void registerObserver() {
         unregisterObserver();
-//        getContentResolver().registerContentObserver(Uri.parse("content://sms"), true,
-//                newMmsContentObserver);
         getContentResolver().registerContentObserver(Telephony.MmsSms.CONTENT_URI, true,
                 newMmsContentObserver);
     }
@@ -108,7 +105,7 @@ public class LaunchActivity extends ActionBarActivity {
         final IntentFilter filter = new IntentFilter();
         filter.addAction("com.android.phone.NotificationMgr.MissedCall_intent");
         registerReceiver(receiver, filter);
-        registerObserver();
+//        registerObserver();
 
         getWindow().setBackgroundDrawableResource(R.drawable.transparent);
         getWindow().setFormat(PixelFormat.RGB_565);
@@ -131,7 +128,6 @@ public class LaunchActivity extends ActionBarActivity {
         fragment.onFragmentCreate();
         presentFragment(fragment,"settings",false);
 
-        Log.e(TAG,"------register sms listener------");
         IntentFilter smsFilter = new IntentFilter();
         smsFilter.addAction(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
         smsFilter.setPriority(Integer.MAX_VALUE);
@@ -142,7 +138,7 @@ public class LaunchActivity extends ActionBarActivity {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(receiver);
-        unregisterObserver();
+//        unregisterObserver();
         unregisterReceiver(ApplicationLoader.Instance.getSMSBroadcastReceiver());
     }
 

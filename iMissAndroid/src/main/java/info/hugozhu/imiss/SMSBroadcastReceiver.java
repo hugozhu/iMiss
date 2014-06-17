@@ -26,6 +26,8 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
         this.handler = null;
     }
 
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if(intent.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
@@ -39,10 +41,7 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                     String mobile = sms.getOriginatingAddress();//发送短信的手机号码
                     String content = sms.getMessageBody(); //短信内容
                     Date date = new Date(sms.getTimestampMillis());
-                    Log.e(TAG, TAG + "-->mobile:" + mobile);
-                    Log.e(TAG, TAG + "-->content:" + content);
-                    Log.e(TAG, TAG + "-->handler:" + handler);
-                    LogMessages.getInstance().add(date+" "+ mobile+" "+content);
+                    LogMessages.getInstance().add(format.format(date)+" "+ mobile+" "+content);
                     if ( handler!=null ) {
                         handler.handleSMS(sms);
                     }

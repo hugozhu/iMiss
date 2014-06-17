@@ -3,9 +3,9 @@
 <resources>
     <string name="AppName">iMiss</string>
     <string name="setting_section_general">General</string>
-    <string name="your_phone_number">Your Phone Number</string>
-    <string name="your_email">Your Email</string>
+    <string name="your_email">Your Forwarding Email</string>
+    <string name="your_phone_number">Your Forwarding Phone</string>
     <string name="setting_section_logs">Logs</string>
-    <string name="setting_email_notification">Alert by Email</string>
-    <string name="setting_sms_notification">Alert by Email</string>
+    <string name="setting_email_notification">Forward via Email</string>
+    <string name="setting_sms_notification">Forward via SMS</string>
 </resources>

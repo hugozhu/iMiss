@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.telephony.SmsMessage;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,8 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
     int generalSectionRow;
     int emailEnableRow;
     int emailRow;
+    int smsEnableRow;
+    int smsRow;
     int logSectionRow;
     int logRow;
 
@@ -46,10 +49,10 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
         generalSectionRow = rowCount++;
         emailEnableRow = rowCount++;
         emailRow       = rowCount++;
+        smsEnableRow = rowCount++;
+        smsRow       = rowCount++;
         logSectionRow  = rowCount++;
         logRow         = rowCount++;
-        Log.e(TAG, "register iMissingHandler");
-        ApplicationLoader.Instance.getSMSBroadcastReceiver().register(this);
         return true;
     }
 
@@ -64,6 +67,8 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        Log.e(TAG, "register iMissingHandler");
+        ApplicationLoader.Instance.getSMSBroadcastReceiver().register(this);
     }
 
     @Override
@@ -94,12 +99,19 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
                         editor.putBoolean("enable_email", !send);
                         editor.commit();
                         if (listView != null) {
-                            Log.e(TAG, "invalidate views");
                             listView.invalidateViews();
                         }
                     }
-                    if (position == emailRow) {
-                        Log.e(TAG,"-------------- clicked emailRow");
+
+                    if (position == smsEnableRow) {
+                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                        boolean send = preferences.getBoolean("enable_sms", false);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putBoolean("enable_sms", !send);
+                        editor.commit();
+                        if (listView != null) {
+                            listView.invalidateViews();
+                        }
                     }
 
                 }
@@ -161,7 +173,6 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
             LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             if (i==emailEnableRow) {
-                Log.e(TAG, "get email enable view");
                 view = li.inflate(R.layout.settings_row_check_layout, viewGroup, false);
                 TextView textView = (TextView) view.findViewById(R.id.settings_row_text);
                 View divider = view.findViewById(R.id.settings_row_divider);
@@ -177,26 +188,36 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
                 }
             }
 
+            if (i==smsEnableRow) {
+                view = li.inflate(R.layout.settings_row_check_layout, viewGroup, false);
+                TextView textView = (TextView) view.findViewById(R.id.settings_row_text);
+                View divider = view.findViewById(R.id.settings_row_divider);
+                ImageView checkButton = (ImageView) view.findViewById(R.id.settings_row_check_button);
+                textView.setText(R.string.setting_sms_notification);
+                divider.setVisibility(View.VISIBLE);
+
+                boolean enabled = preferences.getBoolean("enable_sms", false);
+                if (enabled) {
+                    checkButton.setImageResource(R.drawable.btn_check_on);
+                } else {
+                    checkButton.setImageResource(R.drawable.btn_check_off);
+                }
+            }
+
             if (i==emailRow) {
-                Log.e(TAG, "get email view");
                 view = li.inflate(R.layout.settings_row_email_layout, viewGroup, false);
                 final TextView textView = (TextView) view.findViewById(R.id.settings_email);
                 View divider = view.findViewById(R.id.settings_row_divider);
                 String email = preferences.getString("your_email", getResources().getString(R.string.your_email));
                 textView.setText(email);
                 textView.setSelectAllOnFocus(true);
+                textView.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 textView.setEnabled(preferences.getBoolean("enable_email", false));
                 if (textView.isEnabled()) {
-                    textView.setTextColor(Color.BLACK);
+                    textView.setTextColor(Color.BLUE);
                 } else {
                     textView.setTextColor(Color.GRAY);
                 }
-                textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        Log.e(TAG,"email hasFocus: "+hasFocus);
-                    }
-                });
                 textView.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -216,6 +237,47 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
                             editor.remove("your_email");
                         } else {
                             editor.putString("your_email", tmp);
+                        }
+                        editor.commit();
+                    }
+                });
+                divider.setVisibility(View.INVISIBLE);
+            }
+
+
+            if (i==smsRow) {
+                view = li.inflate(R.layout.settings_row_email_layout, viewGroup, false);
+                final TextView textView = (TextView) view.findViewById(R.id.settings_email);
+                View divider = view.findViewById(R.id.settings_row_divider);
+                String email = preferences.getString("your_phone", getResources().getString(R.string.your_phone_number));
+                textView.setText(email);
+                textView.setSelectAllOnFocus(true);
+                textView.setEnabled(preferences.getBoolean("enable_sms", false));
+                if (textView.isEnabled()) {
+                    textView.setTextColor(Color.CYAN);
+                } else {
+                    textView.setTextColor(Color.GRAY);
+                }
+                textView.setInputType(InputType.TYPE_CLASS_PHONE);
+                textView.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        SharedPreferences.Editor editor = preferences.edit();
+                        String tmp = textView.getText().toString();
+                        if (tmp.trim().length()==0 || tmp.equals(getResources().getString(R.string.your_email))) {
+                            editor.remove("your_phone");
+                        } else {
+                            editor.putString("your_phone", tmp);
                         }
                         editor.commit();
                     }
@@ -245,7 +307,6 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
                     tmp.append(s);
                     tmp.append("\n");
                 }
-                Log.e(TAG, "refresh logs view:"+tmp);
                 textView.setText(tmp);
             }
             if (view == null) {
