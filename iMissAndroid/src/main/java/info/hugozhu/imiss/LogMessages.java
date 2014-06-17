@@ -20,7 +20,7 @@ public class LogMessages {
 
     private ArrayList<String> messages = null;
 
-    public void add(String s) {
+    public synchronized void add(String s) {
         messages.add(s);
     }
 

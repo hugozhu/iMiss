@@ -16,6 +16,15 @@ import java.util.Date;
  */
 public class SMSBroadcastReceiver extends BroadcastReceiver {
     final static String TAG = "iMiss";
+    private IMissingHandler handler;
+
+    public void register(IMissingHandler notification) {
+        this.handler = notification;
+    }
+
+    public void unregister() {
+        this.handler = null;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -30,12 +39,13 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                     String mobile = sms.getOriginatingAddress();//发送短信的手机号码
                     String content = sms.getMessageBody(); //短信内容
                     Date date = new Date(sms.getTimestampMillis());
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    String time = format.format(date);  //得到发送时间
-                    Log.e(TAG, TAG + "-------msm---------");
                     Log.e(TAG, TAG + "-->mobile:" + mobile);
                     Log.e(TAG, TAG + "-->content:" + content);
-                    Log.e(TAG, TAG + "-->time:" + time);
+                    Log.e(TAG, TAG + "-->handler:" + handler);
+                    LogMessages.getInstance().add(date+" "+ mobile+" "+content);
+                    if ( handler!=null ) {
+                        handler.handleSMS(sms);
+                    }
                 }
             }
         }

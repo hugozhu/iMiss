@@ -100,8 +100,6 @@ public class LaunchActivity extends ActionBarActivity {
         }
     };
 
-    SMSBroadcastReceiver smsReceiver = new SMSBroadcastReceiver();
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,7 +135,7 @@ public class LaunchActivity extends ActionBarActivity {
         IntentFilter smsFilter = new IntentFilter();
         smsFilter.addAction(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
         smsFilter.setPriority(Integer.MAX_VALUE);
-        registerReceiver(smsReceiver, smsFilter);
+        registerReceiver(ApplicationLoader.Instance.getSMSBroadcastReceiver(), smsFilter);
     }
 
     @Override
@@ -145,7 +143,7 @@ public class LaunchActivity extends ActionBarActivity {
         super.onDestroy();
         unregisterReceiver(receiver);
         unregisterObserver();
-        unregisterReceiver(smsReceiver);
+        unregisterReceiver(ApplicationLoader.Instance.getSMSBroadcastReceiver());
     }
 
 

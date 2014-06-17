@@ -2,6 +2,7 @@ package info.hugozhu.imiss.ui;
 
 import android.app.Application;
 import android.content.Context;
+import info.hugozhu.imiss.SMSBroadcastReceiver;
 import info.hugozhu.imiss.ui.Views.BaseFragment;
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ public class ApplicationLoader extends Application {
     public static ArrayList<BaseFragment> fragmentsStack = new ArrayList<BaseFragment>();
     private static volatile boolean applicationInited = false;
 
+    private SMSBroadcastReceiver smsReceiver = new SMSBroadcastReceiver();
+
 
     public void onCreate() {
         super.onCreate();
@@ -26,6 +29,10 @@ public class ApplicationLoader extends Application {
         java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
 
         applicationContext = getApplicationContext();
+    }
+
+    public SMSBroadcastReceiver getSMSBroadcastReceiver() {
+        return smsReceiver;
     }
 
     public static void postInitApplication() {

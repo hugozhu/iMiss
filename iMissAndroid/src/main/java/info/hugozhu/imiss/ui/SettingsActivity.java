@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.telephony.SmsMessage;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -14,15 +15,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import info.hugozhu.imiss.IMissingHandler;
 import info.hugozhu.imiss.LogMessages;
 import info.hugozhu.imiss.R;
 import info.hugozhu.imiss.ui.Views.BaseFragment;
 import info.hugozhu.imiss.ui.Views.OnSwipeTouchListener;
 
+import java.util.List;
+
 /**
  * Created by hugozhu on 3/25/14.
  */
-public class SettingsActivity extends BaseFragment {
+public class SettingsActivity extends BaseFragment implements IMissingHandler {
     final static String TAG = "iMiss";
     private ListView listView;
     private ListAdapter listAdapter;
@@ -44,40 +48,33 @@ public class SettingsActivity extends BaseFragment {
         emailRow       = rowCount++;
         logSectionRow  = rowCount++;
         logRow         = rowCount++;
+        Log.e(TAG, "register iMissingHandler");
+        ApplicationLoader.Instance.getSMSBroadcastReceiver().register(this);
         return true;
     }
 
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
+        ApplicationLoader.Instance.getSMSBroadcastReceiver().unregister();
+        Log.e(TAG, "unregister iMissingHandler");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(10000);
-                    for (int i=0;i<10;i++) {
-                        LogMessages.getInstance().add("hello");
-                        if (logs!=null) {
-                            new Handler().post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    logs.invalidate();
-                                }
-                            });
-                        }
-                        Thread.sleep(1000);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+    }
+
+    @Override
+    public void handleSMS(SmsMessage sms) {
+        Log.e(TAG, "handle SMS " + sms);
+        if (logs!=null) {
+            List<String> messages = LogMessages.getInstance().getMessages();
+            logs.append(messages.get(messages.size()-1));
+            logs.append("\n");
+            logs.postInvalidate();
+        }
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -248,6 +245,7 @@ public class SettingsActivity extends BaseFragment {
                     tmp.append(s);
                     tmp.append("\n");
                 }
+                Log.e(TAG, "refresh logs view:"+tmp);
                 textView.setText(tmp);
             }
             if (view == null) {
