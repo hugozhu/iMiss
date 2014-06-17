@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.*;
 import info.hugozhu.imiss.IMissingHandler;
 import info.hugozhu.imiss.LogMessages;
@@ -254,7 +255,7 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
                 textView.setSelectAllOnFocus(true);
                 textView.setEnabled(preferences.getBoolean("enable_sms", false));
                 if (textView.isEnabled()) {
-                    textView.setTextColor(Color.CYAN);
+                    textView.setTextColor(Color.BLUE);
                 } else {
                     textView.setTextColor(Color.GRAY);
                 }

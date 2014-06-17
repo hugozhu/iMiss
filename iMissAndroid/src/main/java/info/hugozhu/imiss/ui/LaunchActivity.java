@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import info.hugozhu.imiss.R;
 import info.hugozhu.imiss.ui.Views.BaseFragment;
 
@@ -132,6 +133,9 @@ public class LaunchActivity extends ActionBarActivity {
         smsFilter.addAction(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
         smsFilter.setPriority(Integer.MAX_VALUE);
         registerReceiver(ApplicationLoader.Instance.getSMSBroadcastReceiver(), smsFilter);
+
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     @Override

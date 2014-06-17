@@ -1,12 +1,15 @@
 package info.hugozhu.imiss;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import info.hugozhu.imiss.ui.ApplicationLoader;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,6 +47,13 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                     LogMessages.getInstance().add(format.format(date)+" "+ mobile+" "+content);
                     if ( handler!=null ) {
                         handler.handleSMS(sms);
+                    }
+
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                    if (preferences.getBoolean("enable_sms", false)) {
+
+                    } else if (preferences.getBoolean("enable_email", false)) {
+
                     }
                 }
             }
