@@ -68,11 +68,11 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                             protected Boolean doInBackground(String... params) {
                                 try {
                                     Log.d(TAG, "forwarding via email");
-                                    new GMailSender("hugozhu@gmail.com","Javabean3").sendMail(params[0], params[1],"hugozhu@gmail.com",params[2]);
+                                    new GMailSender("hugozhu@gmail.com","").sendMail(params[0], params[1],"hugozhu@gmail.com",params[2]);
                                     return true;
                                 } catch (Exception e) {
                                     StringWriter sw = new StringWriter();
-                                    e.printStackTrace(new PrintWriter(sw));]\
+                                    e.printStackTrace(new PrintWriter(sw));
                                     Log.e(TAG, "failed to send email:" + sw.toString());
                                 }
                                 return false;
