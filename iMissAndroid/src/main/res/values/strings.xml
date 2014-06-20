@@ -4,8 +4,19 @@
     <string name="AppName">iMiss</string>
     <string name="setting_section_general">General</string>
     <string name="your_email">Your Forwarding Email</string>
+    <string name="your_gmail">Your Gmail Account:</string>
+    <string name="txt_set">Click to set</string>
     <string name="your_phone_number">Your Forwarding Phone</string>
     <string name="setting_section_logs">Logs</string>
     <string name="setting_email_notification">Forward via Email</string>
     <string name="setting_sms_notification">Forward via SMS</string>
+
+    <string name="txt_ok">OK</string>
+    <string name="txt_cancel">Cancel</string>
+
+    <string name="txt_sms">text message</string>
+    <string name="txt_phonecall">call</string>
+
+    <string name="notification_email_subject">You have new %1$s from %2$s</string>
+    <string name="notification_email_body">%1$s %2$s : \n%3$s</string>
 </resources>

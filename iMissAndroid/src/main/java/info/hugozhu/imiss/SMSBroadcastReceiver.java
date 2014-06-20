@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Telephony;
@@ -26,6 +27,11 @@ import java.util.Date;
 public class SMSBroadcastReceiver extends BroadcastReceiver {
     final static String TAG = "iMiss";
     private IMissingHandler handler;
+    Resources resources;
+
+    public SMSBroadcastReceiver(Resources resources) {
+        this.resources = resources;
+    }
 
     public void register(IMissingHandler notification) {
         this.handler = notification;
@@ -35,7 +41,7 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
         this.handler = null;
     }
 
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -55,11 +61,20 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                         handler.handleSMS(sms);
                     }
 
-                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                    String subject = resources.getString(R.string.notification_email_subject);
+                    String body    = resources.getString(R.string.notification_email_body);
+
+                    final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                     if (preferences.getBoolean("enable_sms", false)) {
                         SmsManager smsManager = SmsManager.getDefault();
-                        String targetPhone = preferences.getString("your_phone","13750866695");
-                        smsManager.sendTextMessage(targetPhone, null, format.format(date)+" "+ mobile+" "+content, null, null);
+                        String targetPhone = preferences.getString("your_phone","");
+                        String tmp = String.format(body, format.format(date), mobile, content);
+                        if (tmp.length()>70) {
+                            tmp = tmp.substring(0,66)+"...";
+                        }
+                        smsManager.sendTextMessage(targetPhone, null,
+                                tmp, null, null);
+                        Log.e(TAG, "SMS result....");
                     }
 
                     if (preferences.getBoolean("enable_email", false)) {
@@ -68,7 +83,8 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                             protected Boolean doInBackground(String... params) {
                                 try {
                                     Log.d(TAG, "forwarding via email");
-                                    new GMailSender("hugozhu@gmail.com","").sendMail(params[0], params[1],"hugozhu@gmail.com",params[2]);
+                                    new GMailSender(preferences.getString("gmail_username",""),
+                                            preferences.getString("gmail_password","")).sendMail(params[0], params[1], preferences.getString("gmail_username",""), params[2]);
                                     return true;
                                 } catch (Exception e) {
                                     StringWriter sw = new StringWriter();
@@ -80,9 +96,15 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
 
                             @Override
                             protected void onPostExecute(Boolean result) {
+                                LogMessages.getInstance().add("Email result:"+result);
+                                if ( handler!=null ) {
+                                    handler.handleSMS(null);
+                                }
                                 Log.e(TAG, "Email result:" + result);
                             }
-                        }.execute("You got a new message", format.format(date) + " " + mobile + " " + content, preferences.getString("your_email",""));
+                        }.execute(String.format(subject, resources.getString(R.string.txt_sms) , mobile),
+                                String.format(body, format.format(date), mobile, content),
+                                preferences.getString("your_email", ""));
                     }
                 }
             }

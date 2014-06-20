@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.telephony.SmsMessage;
 import android.text.Editable;
 import android.text.InputType;
@@ -15,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.*;
 import info.hugozhu.imiss.IMissingHandler;
 import info.hugozhu.imiss.LogMessages;
@@ -37,6 +34,7 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
     int generalSectionRow;
     int emailEnableRow;
     int emailRow;
+    int gmailRow;
     int smsEnableRow;
     int smsRow;
     int logSectionRow;
@@ -50,8 +48,9 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
         generalSectionRow = rowCount++;
         emailEnableRow = rowCount++;
         emailRow       = rowCount++;
-        smsEnableRow = rowCount++;
-        smsRow       = rowCount++;
+        gmailRow       = rowCount++;
+        smsEnableRow   = rowCount++;
+        smsRow         = rowCount++;
         logSectionRow  = rowCount++;
         logRow         = rowCount++;
         return true;
@@ -90,28 +89,43 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
             listView = (ListView)fragmentView.findViewById(R.id.listView);
             Log.e(LaunchActivity.TAG, listView + "");
             listView.setAdapter(listAdapter);
+            final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     if (position == emailEnableRow) {
-                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                         boolean send = preferences.getBoolean("enable_email", false);
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putBoolean("enable_email", !send);
                         editor.commit();
                         if (listView != null) {
+                            Log.e(TAG,"refresh views");
                             listView.invalidateViews();
                         }
                     }
 
                     if (position == smsEnableRow) {
-                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                         boolean send = preferences.getBoolean("enable_sms", false);
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putBoolean("enable_sms", !send);
                         editor.commit();
                         if (listView != null) {
                             listView.invalidateViews();
+                        }
+                    }
+
+                    if (position == gmailRow) {
+                        boolean enable_email = preferences.getBoolean("enable_email", false);
+                        if (enable_email) {
+                            GMailDialogFragment dialog = new GMailDialogFragment(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (listView != null) {
+                                        listView.invalidateViews();
+                                    }
+                                }
+                            });
+                            dialog.show(getFragmentManager(), "gmail_dialog");
                         }
                     }
 
@@ -206,84 +220,106 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
             }
 
             if (i==emailRow) {
-                view = li.inflate(R.layout.settings_row_email_layout, viewGroup, false);
-                final TextView textView = (TextView) view.findViewById(R.id.settings_email);
-                View divider = view.findViewById(R.id.settings_row_divider);
-                String email = preferences.getString("your_email", getResources().getString(R.string.your_email));
-                textView.setText(email);
-                textView.setSelectAllOnFocus(true);
-                textView.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                textView.setEnabled(preferences.getBoolean("enable_email", false));
-                if (textView.isEnabled()) {
-                    textView.setTextColor(Color.BLUE);
-                } else {
-                    textView.setTextColor(Color.GRAY);
-                }
-                textView.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                boolean enabled = preferences.getBoolean("enable_email", false);
+                if (enabled) {
+                    view = li.inflate(R.layout.settings_row_email_layout, viewGroup, false);
+                    final TextView textView = (TextView) view.findViewById(R.id.settings_email);
+                    View divider = view.findViewById(R.id.settings_row_divider);
+                    String email = preferences.getString("your_email", "");
+                    textView.setText(email);
+                    textView.setSelectAllOnFocus(true);
+                    textView.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    textView.setEnabled(preferences.getBoolean("enable_email", false));
+                    if (textView.isEnabled()) {
+                        textView.setTextColor(Color.BLUE);
+                    } else {
+                        textView.setTextColor(Color.GRAY);
                     }
+                    textView.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        SharedPreferences.Editor editor = preferences.edit();
-                        String tmp = textView.getText().toString();
-                        if (tmp.trim().length()==0 || tmp.equals(getResources().getString(R.string.your_email))) {
-                            editor.remove("your_email");
-                        } else {
-                            editor.putString("your_email", tmp);
                         }
-                        editor.commit();
-                    }
-                });
-                divider.setVisibility(View.INVISIBLE);
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            SharedPreferences.Editor editor = preferences.edit();
+                            String tmp = textView.getText().toString();
+                            if (tmp.trim().length() == 0 || tmp.equals(getResources().getString(R.string.your_email))) {
+                                editor.remove("your_email");
+                            } else {
+                                editor.putString("your_email", tmp);
+                            }
+                            editor.commit();
+                        }
+                    });
+                    divider.setVisibility(View.INVISIBLE);
+                } else {
+                    view = null;
+                }
             }
 
+            if (i==gmailRow) {
+                boolean enable_email = preferences.getBoolean("enable_email", false);
+                if (enable_email) {
+                    view = li.inflate(R.layout.settings_row_gmail_layout, viewGroup, false);
+                    final TextView textView = (TextView) view.findViewById(R.id.settings_gmail);
+                    textView.setText(preferences.getString("gmail_username", getResources().getString(R.string.txt_set)));
+                } else {
+                    view = null;
+                }
+
+            }
 
             if (i==smsRow) {
-                view = li.inflate(R.layout.settings_row_email_layout, viewGroup, false);
-                final TextView textView = (TextView) view.findViewById(R.id.settings_email);
-                View divider = view.findViewById(R.id.settings_row_divider);
-                String email = preferences.getString("your_phone", getResources().getString(R.string.your_phone_number));
-                textView.setText(email);
-                textView.setSelectAllOnFocus(true);
-                textView.setEnabled(preferences.getBoolean("enable_sms", false));
-                if (textView.isEnabled()) {
-                    textView.setTextColor(Color.BLUE);
-                } else {
-                    textView.setTextColor(Color.GRAY);
-                }
-                textView.setInputType(InputType.TYPE_CLASS_PHONE);
-                textView.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                boolean enabled = preferences.getBoolean("enable_sms", false);
+                if (enabled) {
+                    view = li.inflate(R.layout.settings_row_email_layout, viewGroup, false);
+                    final TextView textView = (TextView) view.findViewById(R.id.settings_email);
+                    View divider = view.findViewById(R.id.settings_row_divider);
+                    String phone = preferences.getString("your_phone", "");
+                    textView.setText(phone);
+                    textView.setHint(getResources().getString(R.string.your_phone_number));
+                    textView.setSelectAllOnFocus(true);
+                    textView.setEnabled(preferences.getBoolean("enable_sms", false));
+                    if (textView.isEnabled()) {
+                        textView.setTextColor(Color.BLUE);
+                    } else {
+                        textView.setTextColor(Color.GRAY);
                     }
+                    textView.setInputType(InputType.TYPE_CLASS_PHONE);
+                    textView.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        SharedPreferences.Editor editor = preferences.edit();
-                        String tmp = textView.getText().toString();
-                        if (tmp.trim().length()==0 || tmp.equals(getResources().getString(R.string.your_email))) {
-                            editor.remove("your_phone");
-                        } else {
-                            editor.putString("your_phone", tmp);
                         }
-                        editor.commit();
-                    }
-                });
-                divider.setVisibility(View.INVISIBLE);
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            SharedPreferences.Editor editor = preferences.edit();
+                            String tmp = textView.getText().toString();
+                            if (tmp.trim().length() == 0 || tmp.equals(getResources().getString(R.string.your_email))) {
+                                editor.remove("your_phone");
+                            } else {
+                                editor.putString("your_phone", tmp);
+                            }
+                            editor.commit();
+                        }
+                    });
+                    divider.setVisibility(View.INVISIBLE);
+                } else {
+                    view = null;
+                }
             }
 
 
@@ -310,8 +346,9 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
                 }
                 textView.setText(tmp);
             }
+
             if (view == null) {
-                Log.e(TAG,"view is empty");
+                view = new View(getActivity());
             }
             return view;
         }

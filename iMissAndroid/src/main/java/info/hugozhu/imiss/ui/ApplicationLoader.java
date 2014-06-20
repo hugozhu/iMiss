@@ -17,7 +17,7 @@ public class ApplicationLoader extends Application {
     public static ArrayList<BaseFragment> fragmentsStack = new ArrayList<BaseFragment>();
     private static volatile boolean applicationInited = false;
 
-    private SMSBroadcastReceiver smsReceiver = new SMSBroadcastReceiver();
+    private SMSBroadcastReceiver smsReceiver = null;
 
 
     public void onCreate() {
@@ -29,6 +29,7 @@ public class ApplicationLoader extends Application {
         java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
 
         applicationContext = getApplicationContext();
+        smsReceiver = new SMSBroadcastReceiver(this.getResources());
     }
 
     public SMSBroadcastReceiver getSMSBroadcastReceiver() {
