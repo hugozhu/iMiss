@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import info.hugozhu.imiss.R;
+import info.hugozhu.imiss.SMSService;
 import info.hugozhu.imiss.ui.Views.BaseFragment;
 
 /**
@@ -129,13 +130,11 @@ public class LaunchActivity extends ActionBarActivity {
         fragment.onFragmentCreate();
         presentFragment(fragment,"settings",false);
 
-        IntentFilter smsFilter = new IntentFilter();
-        smsFilter.addAction(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
-        smsFilter.setPriority(Integer.MAX_VALUE);
-        registerReceiver(ApplicationLoader.Instance.getSMSBroadcastReceiver(), smsFilter);
-
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        Intent service = new Intent(getApplicationContext(), SMSService.class);
+        startService(service);
     }
 
     @Override
@@ -143,7 +142,6 @@ public class LaunchActivity extends ActionBarActivity {
         super.onDestroy();
         unregisterReceiver(receiver);
 //        unregisterObserver();
-        unregisterReceiver(ApplicationLoader.Instance.getSMSBroadcastReceiver());
     }
 
 
