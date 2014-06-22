@@ -134,6 +134,12 @@
         </receiver>
 
         <service android:name=".IMissService" />
+
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="53a64fd956240bbe780da90b" >
+        </meta-data>
+        <meta-data android:value="google_play" android:name="UMENG_CHANNEL"/>
     </application>
 
 </manifest>

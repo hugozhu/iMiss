@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import com.umeng.analytics.MobclickAgent;
 import info.hugozhu.imiss.IMissService;
 import info.hugozhu.imiss.R;
 import info.hugozhu.imiss.ui.Views.BaseFragment;
@@ -51,6 +52,20 @@ public class LaunchActivity extends ActionBarActivity {
 
         Intent service = new Intent(getApplicationContext(), IMissService.class);
         startService(service);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        MobclickAgent.onPageStart("LaunchPage");
+        MobclickAgent.onResume(this);       //统计时长
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("LaunchPage");
+        MobclickAgent.onPause(this);       //统计时长
     }
 
     @Override

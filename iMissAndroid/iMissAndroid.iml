@@ -72,10 +72,13 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="mail" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-19.0.1" level="project" />
+    <orderEntry type="library" exported="" name="umeng-fb-v4.3.2" level="project" />
+    <orderEntry type="library" exported="" name="umeng-update-v2.4.2" level="project" />
     <orderEntry type="library" exported="" name="additionnal" level="project" />
     <orderEntry type="library" exported="" name="support-v4-19.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-4.1.32" level="project" />
     <orderEntry type="library" exported="" name="activation" level="project" />
+    <orderEntry type="library" exported="" name="umeng-analytics-v5.2.3" level="project" />
   </component>
 </module>
 

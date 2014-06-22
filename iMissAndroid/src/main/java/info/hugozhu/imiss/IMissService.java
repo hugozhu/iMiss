@@ -11,6 +11,7 @@ import android.provider.CallLog;
 import android.provider.Telephony;
 import android.telephony.SmsManager;
 import android.util.Log;
+import com.umeng.analytics.MobclickAgent;
 import info.hugozhu.imiss.ui.ApplicationLoader;
 import info.hugozhu.imiss.util.GMailSender;
 
@@ -93,7 +94,7 @@ public class IMissService extends Service implements IMissNotification {
                         Log.e(TAG, "forwarding via email");
                         new GMailSender(preferences.getString("gmail_username",""),
                                 preferences.getString("gmail_password",""))
-                                .sendMail(params[0], params[1], preferences.getString("gmail_username",""), params[2]);
+                                .sendMail(params[0], params[1], preferences.getString("gmail_username", ""), params[2]);
                         return true;
                     } catch (Exception e) {
                         StringWriter sw = new StringWriter();
@@ -112,5 +113,7 @@ public class IMissService extends Service implements IMissNotification {
                     String.format(body, format.format(date), mobile, content),
                     preferences.getString("your_email", ""));
         }
+
+        MobclickAgent.onEvent(this,"send notification");
     }
 }
