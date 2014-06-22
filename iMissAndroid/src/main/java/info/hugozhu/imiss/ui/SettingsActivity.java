@@ -114,7 +114,8 @@ public class SettingsActivity extends BaseFragment implements IMissObserver {
                     if (position == gmailRow) {
                         boolean enable_email = preferences.getBoolean("enable_email", false);
                         if (enable_email) {
-                            GMailDialogFragment dialog = new GMailDialogFragment(new Runnable() {
+                            GMailDialogFragment dialog = new GMailDialogFragment();
+                            dialog.setCallback(new Runnable() {
                                 @Override
                                 public void run() {
                                     if (listView != null) {

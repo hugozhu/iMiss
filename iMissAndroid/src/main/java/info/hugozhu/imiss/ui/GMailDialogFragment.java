@@ -24,7 +24,7 @@ public class GMailDialogFragment extends DialogFragment {
 
     }
 
-    public GMailDialogFragment(Runnable callback) {
+    public void setCallback(Runnable callback) {
         this.callback = callback;
     }
 
