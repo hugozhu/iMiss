@@ -38,7 +38,9 @@ public class LogMessages {
 
     public synchronized void add(String s) {
         messages.add(format.format(new Date())+": "+s);
-        handler.onMissing();
+        if (handler!=null) {
+            handler.onMissing();
+        }
     }
 
     public List<String> getMessages() {

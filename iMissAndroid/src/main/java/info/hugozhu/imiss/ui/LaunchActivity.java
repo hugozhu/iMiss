@@ -8,8 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.*;
 import com.umeng.analytics.MobclickAgent;
 import info.hugozhu.imiss.IMissService;
 import info.hugozhu.imiss.R;
@@ -174,5 +173,21 @@ public class LaunchActivity extends ActionBarActivity {
             super.onSaveInstanceState(outState);
         } catch (Exception e) {
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    public void onAboutItemClick(MenuItem item) {
+//        Intent intent = new Intent(this, AboutActivity.class);
+//        startActivity(intent);
+
+        AboutActivity fragment = new AboutActivity();
+        presentFragment(fragment,"about",false);
+
     }
 }

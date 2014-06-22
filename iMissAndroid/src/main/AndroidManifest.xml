@@ -122,7 +122,7 @@
                 <data android:mimeType="vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile"/>
             </intent-filter>
         </activity>
-
+        <activity android:name=".ui.AboutActivity"/>
 
         <receiver android:name=".BootBroadcastReceiver" >
             <intent-filter android:priority="2147483647">
