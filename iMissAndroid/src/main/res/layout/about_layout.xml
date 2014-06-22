@@ -2,7 +2,36 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent">
 
+    <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_launcher"
+            android:id="@+id/imageView"
+            android:layout_marginTop="80dp"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal" android:adjustViewBounds="false"/>
+    <TextView
+            android:text="@string/AppName"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:layout_gravity="center_horizontal" />
+
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:layout_weight="1"
+            android:orientation="vertical">
+        <TextView
+                android:text="\@Copyright Hugo Zhu &lt;hugozhu@gmail.com&gt;"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:focusable="false"
+                android:layout_gravity="center_horizontal|bottom" android:gravity="bottom"/>
+    </LinearLayout>
 </LinearLayout>

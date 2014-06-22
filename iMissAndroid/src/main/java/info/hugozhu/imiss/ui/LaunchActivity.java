@@ -153,6 +153,7 @@ public class LaunchActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
+        Log.e(TAG, "stack size: " + ApplicationLoader.fragmentsStack.size());
         if (ApplicationLoader.fragmentsStack.size() == 1) {
             ApplicationLoader.fragmentsStack.get(0).onFragmentDestroy();
             ApplicationLoader.fragmentsStack.clear();
@@ -185,9 +186,7 @@ public class LaunchActivity extends ActionBarActivity {
     public void onAboutItemClick(MenuItem item) {
 //        Intent intent = new Intent(this, AboutActivity.class);
 //        startActivity(intent);
-
         AboutActivity fragment = new AboutActivity();
         presentFragment(fragment,"about",false);
-
     }
 }

@@ -20,28 +20,18 @@ public class AboutActivity extends BaseFragment  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.about_layout);
-        Log.e(TAG,"AboutActivity onCreate");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.e(TAG,"AboutActivity onCreateView");
         if (fragmentView==null) {
             fragmentView = inflater.inflate(R.layout.about_layout, container, false);
+        } else {
+            ViewGroup parent = (ViewGroup)fragmentView.getParent();
+            if (parent != null) {
+                parent.removeView(fragmentView);
+            }
         }
         return fragmentView;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.e(TAG,"AboutActivity onDestroy");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.e(TAG,"AboutActivity onResume");
     }
 }
