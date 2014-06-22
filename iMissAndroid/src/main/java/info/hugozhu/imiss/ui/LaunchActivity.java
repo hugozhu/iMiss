@@ -2,22 +2,16 @@ package info.hugozhu.imiss.ui;
 
 import android.app.Activity;
 import android.content.*;
-import android.database.ContentObserver;
-import android.database.Cursor;
 import android.graphics.PixelFormat;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.CallLog;
-import android.provider.Telephony;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import info.hugozhu.imiss.IMissService;
 import info.hugozhu.imiss.R;
-import info.hugozhu.imiss.SMSService;
 import info.hugozhu.imiss.ui.Views.BaseFragment;
 
 /**
@@ -26,88 +20,10 @@ import info.hugozhu.imiss.ui.Views.BaseFragment;
 public class LaunchActivity extends ActionBarActivity {
     final static String TAG = "iMiss";
 
-    private ContentObserver newMmsContentObserver = new ContentObserver(new Handler()) {
-        public void onChange(boolean selfChange) {
-            int mNewSmsCount = getNewSmsCount() + getNewMmsCount();
-            Log.e(TAG,"missing msg:"+ mNewSmsCount+" missing calls:"+readMissCall());
-        }
-    };
-
-    private void registerObserver() {
-        unregisterObserver();
-        getContentResolver().registerContentObserver(Telephony.MmsSms.CONTENT_URI, true,
-                newMmsContentObserver);
-    }
-
-    private synchronized void unregisterObserver() {
-        try {
-            if (newMmsContentObserver != null) {
-                getContentResolver().unregisterContentObserver(newMmsContentObserver);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "unregisterObserver fail");
-        }
-    }
-
-    private int getNewSmsCount() {
-        int result = 0;
-        Cursor csr = getContentResolver().query(Uri.parse("content://sms"), null,
-                "type = 1 and read = 0", null, null);
-        if (csr != null) {
-            result = csr.getCount();
-            csr.close();
-        }
-        return result;
-    }
-
-    private int getNewMmsCount() {
-        int result = 0;
-        Cursor csr = getContentResolver().query(Uri.parse("content://mms/inbox"),
-                null, "read = 0", null, null);
-        if (csr != null) {
-            result = csr.getCount();
-            csr.close();
-        }
-        return result;
-    }
-
-    private int readMissCall() {
-        int result = 0;
-        Cursor cursor = getContentResolver().query(CallLog.Calls.CONTENT_URI, new String[] {
-                CallLog.Calls.TYPE
-        }, " type=? and new=?", new String[] {
-                CallLog.Calls.MISSED_TYPE + "", "1"
-        }, "date desc");
-
-        if (cursor != null) {
-            result = cursor.getCount();
-            cursor.close();
-        }
-
-        return result;
-    }
-
-
-    final BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action != null && "com.android.phone.NotificationMgr.MissedCall_intent".equals(action)) {
-                int mMissCallCount = intent.getExtras().getInt("MissedCallNumber");
-                Log.e(TAG, "missing calls:" + mMissCallCount);
-            }
-        }
-    };
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setTheme(R.style.Theme_iMiss);
-
-        final IntentFilter filter = new IntentFilter();
-        filter.addAction("com.android.phone.NotificationMgr.MissedCall_intent");
-        registerReceiver(receiver, filter);
-//        registerObserver();
 
         getWindow().setBackgroundDrawableResource(R.drawable.transparent);
         getWindow().setFormat(PixelFormat.RGB_565);
@@ -133,15 +49,13 @@ public class LaunchActivity extends ActionBarActivity {
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        Intent service = new Intent(getApplicationContext(), SMSService.class);
+        Intent service = new Intent(getApplicationContext(), IMissService.class);
         startService(service);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(receiver);
-//        unregisterObserver();
     }
 
 
@@ -205,7 +119,7 @@ public class LaunchActivity extends ActionBarActivity {
             ApplicationLoader.fragmentsStack.remove(ApplicationLoader.fragmentsStack.size() - 1);
             current.onFragmentDestroy();
         }
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        SharedPreferences preferences = ApplicationLoader.getMainConfig();
         boolean animations = preferences.getBoolean("view_animations", true);
         if (animations) {
             if (bySwipe) {

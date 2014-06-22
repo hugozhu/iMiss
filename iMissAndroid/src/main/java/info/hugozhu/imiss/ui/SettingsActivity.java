@@ -1,11 +1,9 @@
 package info.hugozhu.imiss.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.telephony.SmsMessage;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -14,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import info.hugozhu.imiss.IMissingHandler;
+import info.hugozhu.imiss.IMissObserver;
 import info.hugozhu.imiss.LogMessages;
 import info.hugozhu.imiss.R;
 import info.hugozhu.imiss.ui.Views.BaseFragment;
@@ -25,7 +23,7 @@ import java.util.List;
 /**
  * Created by hugozhu on 3/25/14.
  */
-public class SettingsActivity extends BaseFragment implements IMissingHandler {
+public class SettingsActivity extends BaseFragment implements IMissObserver {
     final static String TAG = "iMiss";
     private ListView listView;
     private ListAdapter listAdapter;
@@ -59,7 +57,7 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        ApplicationLoader.Instance.getSMSBroadcastReceiver().unregister();
+        LogMessages.getInstance().unregister();
         Log.e(TAG, "unregister iMissingHandler");
     }
 
@@ -68,12 +66,11 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         Log.e(TAG, "register iMissingHandler");
-        ApplicationLoader.Instance.getSMSBroadcastReceiver().register(this);
+        LogMessages.getInstance().register(this);
     }
 
     @Override
-    public void handleSMS(SmsMessage sms) {
-        Log.e(TAG, "handle SMS " + sms);
+    public void onMissing() {
         if (logs!=null) {
             List<String> messages = LogMessages.getInstance().getMessages();
             logs.append(messages.get(messages.size()-1));
@@ -89,7 +86,7 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
             listView = (ListView)fragmentView.findViewById(R.id.listView);
             Log.e(LaunchActivity.TAG, listView + "");
             listView.setAdapter(listAdapter);
-            final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+            final SharedPreferences preferences = ApplicationLoader.getMainConfig();
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -184,7 +181,7 @@ public class SettingsActivity extends BaseFragment implements IMissingHandler {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+            final SharedPreferences preferences = ApplicationLoader.getMainConfig();
             LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             if (i==emailEnableRow) {

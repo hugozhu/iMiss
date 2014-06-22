@@ -19,4 +19,6 @@
 
     <string name="notification_email_subject">You have new %1$s from %2$s</string>
     <string name="notification_email_body">%1$s %2$s : \n%3$s</string>
+    <string name="fmt_phone_time">MM-dd HH:mm</string>
+
 </resources>

@@ -1,7 +1,9 @@
 package info.hugozhu.imiss.ui;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import info.hugozhu.imiss.SMSBroadcastReceiver;
 import info.hugozhu.imiss.ui.Views.BaseFragment;
 
@@ -17,9 +19,6 @@ public class ApplicationLoader extends Application {
     public static ArrayList<BaseFragment> fragmentsStack = new ArrayList<BaseFragment>();
     private static volatile boolean applicationInited = false;
 
-    private SMSBroadcastReceiver smsReceiver = null;
-
-
     public void onCreate() {
         super.onCreate();
         currentLocale = Locale.getDefault();
@@ -29,11 +28,6 @@ public class ApplicationLoader extends Application {
         java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
 
         applicationContext = getApplicationContext();
-        smsReceiver = new SMSBroadcastReceiver(this.getResources());
-    }
-
-    public SMSBroadcastReceiver getSMSBroadcastReceiver() {
-        return smsReceiver;
     }
 
     public static void postInitApplication() {
@@ -44,4 +38,8 @@ public class ApplicationLoader extends Application {
         applicationInited = true;
     }
 
+
+    public static SharedPreferences getMainConfig() {
+        return applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+    }
 }

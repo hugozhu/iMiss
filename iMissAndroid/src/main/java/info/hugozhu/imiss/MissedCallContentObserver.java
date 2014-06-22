@@ -10,6 +10,7 @@ import android.provider.CallLog;
 import android.util.Log;
 import info.hugozhu.imiss.ui.ApplicationLoader;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -19,12 +20,14 @@ public class MissedCallContentObserver extends ContentObserver {
     final static String TAG = "iMiss";
     private Context ctx;
     long lastCall = 0;
+    private IMissNotification notification = null;
 
-    public MissedCallContentObserver(Context context, Handler handler) {
+    public MissedCallContentObserver(Context context, Handler handler, IMissNotification notification) {
         super(handler);
         ctx = context;
         final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         lastCall = preferences.getLong("last_call",0);
+        this.notification = notification;
     }
 
     public void onChange(boolean selfChange) {
@@ -39,16 +42,17 @@ public class MissedCallContentObserver extends ContentObserver {
                     case CallLog.Calls.MISSED_TYPE:
                         Log.v(TAG, "missed type");
                         if (csr.getInt(csr.getColumnIndex(CallLog.Calls.NEW)) == 1) {
-                            String log = "You have a missed call from: "+csr.getString(csr.getColumnIndex(CallLog.Calls.NUMBER));
+                            String mobile = csr.getString(csr.getColumnIndex(CallLog.Calls.NUMBER));
+                            String log = "You have a missed call from: "+mobile;
                             long timestamp = csr.getLong(csr.getColumnIndexOrThrow(CallLog.Calls.DATE));
                             if (timestamp > lastCall) {
                                 lastCall = timestamp;
-                                LogMessages.getInstance().add(log + new Date(lastCall));
+                                LogMessages.getInstance().add(log);
                                 Log.e(TAG, log);
                                 SharedPreferences.Editor editor = preferences.edit();
                                 editor.putLong("last_call", lastCall);
                                 editor.commit();
-                                //todo: broadcast to update ui
+                                notification.sendNotification(new Date(lastCall), mobile, null);
                             }
                         }
                         break;

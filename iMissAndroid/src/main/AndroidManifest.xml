@@ -133,7 +133,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".SMSService" />
+        <service android:name=".IMissService" />
     </application>
 
 </manifest>
